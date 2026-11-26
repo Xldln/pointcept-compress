@@ -6,7 +6,7 @@
 
 ### This project studies inference-time token merging and reduced-precision inference for Point Transformer V3 (PTv3) on S3DIS Area 5.
 
-> This work was completed as a **course project** by Yubin Xu, Xuan Zhou, Yutong Fan, Yuanan Li, Rui Zheng, and Yi Xing.
+> This work was completed as a **course project**.
 
 ## GitMerge3D Token Merging
 
