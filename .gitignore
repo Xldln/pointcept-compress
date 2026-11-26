@@ -29,6 +29,7 @@ __pycache__/
 .pytest_cache/
 .ipynb_checkpoints/
 
+*.pptx
 # Local environments and tooling
 /.codegraph/
 /.venv/

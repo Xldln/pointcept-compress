@@ -8,6 +8,12 @@
 
 > This work was completed as a **course project**.
 
+## Interactive Visualization
+
+Explore and compare indoor point clouds in the browser with our course project's visualization platform. [Open LiDAR Workbench ↗](https://zhouxuan-git.github.io/lidar-workbench/?v=4)
+
+![LiDAR Workbench demo showing a side-by-side comparison of S3DIS Area 5 Office 33](assets/office1.gif)
+
 ## GitMerge3D Token Merging
 
 The PTv3 integration adapts GitMerge3D's patch matching to merge similar tokens before attention and restore the original token layout afterward. The merge ratio and stride are configurable through `--r` and `--stride`.
