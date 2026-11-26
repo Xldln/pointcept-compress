@@ -23,6 +23,28 @@ sh "$eval_script" --data-root data/s3dis_le_1m --weight path/to/model.pth --fp16
 sh "$eval_script" --data-root data/s3dis_le_1m --weight path/to/model-w8a8.pth
 ```
 
+### S3DIS Area 5 Results
+
+| Method | Type | `r` | Stride | Patch size | mIoU | mAcc | allAcc | Throughput (Mpts/s/GPU) | Mean AGM (MiB) | Peak AGM (GiB) | Weight size (MiB) |
+| :--- | :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| PTv3 | Baseline | — | — | 128 | 80.05% | 84.65% | 93.56% | 1.0222 | 423.9 | 6.83 | 176.41 |
+| PTv3 + RandomDrop | TC | 0.8 | — | 26 | 76.73% | 81.48% | 91.91% | 0.7225 | 384.4 | 3.64 | 176.41 |
+| PTv3 + GitMerge3D | TC | 0.5 | 2 | 64 | 79.79% | 84.35% | 93.50% | 0.7480 | 423.9 | 6.55 | 176.41 |
+| PTv3 + GitMerge3D | TC | 0.7 | 4 | 39 | 79.73% | 84.29% | 93.41% | 0.8088 | 423.9 | 6.42 | 176.41 |
+| PTv3 + GitMerge3D | TC | 0.8 | 5 | 26 | 78.90% | 83.43% | 93.10% | 0.8283 | 423.9 | 6.37 | 176.41 |
+| PTv3 + GitMerge3D | TC | 0.9 | 10 | 13 | 76.87% | 81.52% | 92.22% | 0.8816 | 423.9 | 6.34 | 176.41 |
+| PTv3 FP16 | PTQ | — | — | 128 | 80.05% | 84.65% | 93.56% | 1.4035 | 237.9 | 5.51 | 88.27 |
+| PTv3 INT8 | PTQ | — | — | 128 | 80.06% | 84.67% | 93.57% | 1.2970 | 106.8 | 5.39 | 44.78 |
+| PTv3 INT8 + GitMerge3D | TC + PTQ | 0.7 | 4 | 39 | 79.75% | 84.32% | 93.42% | 0.9864 | 106.8 | 4.82 | 44.78 |
+| PTv3 INT8 + GitMerge3D | TC + PTQ | 0.8 | 5 | 26 | 78.92% | 83.46% | 93.12% | 1.0280 | 106.8 | 4.78 | 44.78 |
+
+*Table 1. PTv3 semantic segmentation on S3DIS Area 5 with token compression, FP16 inference, and INT8 post-training quantization. A dash indicates that a parameter does not apply.*
+
+- **Method types.** TC stands for token compression. The post-training quantization (PTQ) group includes FP16 as an uncalibrated half-precision comparison and INT8 as calibrated W8A8, which quantizes both weights and activations in supported layers.
+- **Compression parameters.** `r` is the target fraction of tokens merged within each GitMerge3D attention patch, or the fraction of input points dropped by RandomDrop before inference. GitMerge3D uses the stride as the bin width and selects one destination token per full bin. Patch size reports the token count for a full 128-token patch after GitMerge3D. For RandomDrop, 26 is the equivalent retained count out of 128 at `r = 0.8`. RandomDrop samples points per room before the model forms attention patches.
+- **Segmentation metrics.** mIoU is the mean of per-class intersection-over-union scores. mAcc is the mean of per-class accuracies. allAcc is the fraction of all evaluated points classified correctly.
+- **Efficiency metrics.** Throughput is measured in millions of model input points per second per GPU, using forward-pass time after five warm-up passes per GPU. AGM stands for allocated GPU memory. Mean AGM averages the allocation at the end of each timed forward pass. Peak AGM is the highest allocation recorded during a timed forward pass. Weight size is the on-disk size of the model weights.
+
 ## References and Acknowledgments
 
 We thank the authors and maintainers of these projects for releasing their code.
