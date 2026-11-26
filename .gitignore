@@ -1,0 +1,45 @@
+# Datasets, experiment outputs, and model weights
+/data/
+/exp/
+/pointcept-eval/
+/weights/
+/checkpoints/
+*.pth
+*.pth.tmp
+*.pt
+*.ckpt
+*.safetensors
+wandb/
+events.out.tfevents.*
+*.log
+
+
+
+
+# Python and native extension build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+/build/
+/dist/
+/libs/*/build/
+/libs/*/dist/
+*.so
+*.o
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Local environments and tooling
+/.codegraph/
+/.venv/
+/venv/
+.env
+.env.*
+!.env.example
+/.idea/
+/.vscode/
+.DS_Store
+
+*.zip
+.codegraph
+.ipynb_checkpoints

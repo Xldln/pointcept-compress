@@ -1,0 +1,29 @@
+# Use from the repository root with Python 3.10 on Linux x86_64.
+# Install the CUDA 12.4 PyTorch wheels before building the local extensions.
+# Install bioconda::google-sparsehash with Conda for the pointgroup_ops headers.
+--extra-index-url https://download.pytorch.org/whl/cu124
+--find-links https://data.pyg.org/whl/torch-2.5.0+cu124.html
+
+torch==2.5.0+cu124
+torchvision==0.20.0+cu124
+torchaudio==2.5.0+cu124
+
+ftfy
+regex
+matplotlib
+black
+open3d
+peft
+
+# Conda removes these when the existing CPU PyTorch packages are removed.
+timm==1.0.29
+tqdm==4.70.0
+
+torch-cluster==1.6.3+pt25cu124
+torch-scatter==2.1.2+pt25cu124
+torch-sparse==0.6.18+pt25cu124
+torch-geometric
+spconv-cu124
+git+https://github.com/octree-nn/ocnn-pytorch.git
+git+https://github.com/openai/CLIP.git
+
