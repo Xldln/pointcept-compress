@@ -4,7 +4,9 @@
   <a href="https://huggingface.co/yubinux/PTv3-PTQ"><img src="docs/assets/huggingface-ptv3-ptq.svg" alt="Hugging Face · PTv3-PTQ" width="141" height="20" /></a>
 </p>
 
-This project studies inference-time token merging and reduced-precision inference for Point Transformer V3 (PTv3) on S3DIS Area 5.
+### This project studies inference-time token merging and reduced-precision inference for Point Transformer V3 (PTv3) on S3DIS Area 5.
+
+> This work was completed as a **course project** by Yubin Xu, Xuan Zhou, Yutong Fan, Yuanan Li, Rui Zheng, and Yi Xing.
 
 ## GitMerge3D Token Merging
 
