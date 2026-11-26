@@ -1,7 +1,7 @@
 # A Study on Token Compression and Quantization for PTv3 Point Cloud Segmentation
 
 <p align="center">
-  <a href="https://huggingface.co/yubinux/PTv3-PTQ"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20HF%20Model%20%C2%B7%20PTv3--PTQ-cb8625?style=flat-square" alt="Hugging Face · PTv3-PTQ" /></a>
+  <a href="https://huggingface.co/yubinux/PTv3-PTQ"><img src="docs/assets/huggingface-ptv3-ptq.svg" alt="Hugging Face · PTv3-PTQ" width="141" height="20" /></a>
 </p>
 
 This project studies inference-time token merging and reduced-precision inference for Point Transformer V3 (PTv3) on S3DIS Area 5.
