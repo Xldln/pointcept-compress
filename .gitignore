@@ -14,7 +14,7 @@ events.out.tfevents.*
 *.log
 
 up2hf
-
+Pointcept-code
 
 # Python and native extension build artifacts
 __pycache__/

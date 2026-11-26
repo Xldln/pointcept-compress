@@ -9,8 +9,10 @@ grid_size="${GRID_SIZE:-0.02}"
 data_root="${POINTCEPT_DATA_ROOT:-data/s3dis_le_1m}"
 legacy_sparse_features="${LEGACY_SPARSE_FEATURES:-true}"
 test_workers="${TEST_WORKERS_PER_GPU:-2}"
-weight="$PWD/exp/s3dis/ptv3-area5/model/model_best.pth"
+model_dir="$PWD/exp/s3dis/ptv3-area5/model"
+weight=
 
+test_w8a8=false
 test_fp16=false
 seed=25326354
 gitmerge3d=false
@@ -22,6 +24,7 @@ merge_ratio=0.8
 merge_stride=5
 while [ "$#" -gt 0 ]; do
     case "$1" in
+        --int8) test_w8a8=true; shift ;;
         --fp16) test_fp16=true; shift ;;
         --randomdrop) randomdrop=true; shift ;;
         # --ttr) gitmerge3d=true; ttr=true; shift ;;
@@ -47,10 +50,23 @@ while [ "$#" -gt 0 ]; do
             esac
             shift 2 ;;
         *)
-            printf 'Usage: %s [--fp16] [--weight PATH] [--data-root PATH] [--gitmerge3d | --randomdrop] [--r FRACTION] [--stride N]\n' "$0" >&2
+            printf 'Usage: %s [--fp16 | --int8] [--weight PATH] [--data-root PATH] [--gitmerge3d | --randomdrop] [--r FRACTION] [--stride N]\n' "$0" >&2
             exit 2 ;;
     esac
 done
+
+if "$test_w8a8"; then
+    if "$test_fp16"; then
+        echo '--int8 and --fp16 select different checkpoints; choose one' >&2
+        exit 2
+    fi
+    python_bin="${POINTCEPT_PYTHON:-$(command -v python)}"
+    weight="${weight:-$model_dir/quant/ptv3_w8a8.pth}"
+    # cumm discovers CUDA headers for INT8 kernel compilation through nvcc.
+    export PATH="$(dirname "$python_bin"):$PATH"
+else
+    weight="${weight:-$model_dir/model_best.pth}"
+fi
 
 if "$randomdrop"; then
     if "$gitmerge3d" || "$stride_set"; then
@@ -102,6 +118,7 @@ exec "$python_bin" -u tools/test.py \
     --options "save_path=$save_path" "weight=$weight" "seed=$seed" \
     "data.test.data_root=$data_root" \
     "data.test.test_cfg.voxelize.grid_size=$grid_size" \
+    "test_w8a8=$test_w8a8" \
     "test_fp16=$test_fp16" measure_forward_performance=true \
     "test_num_workers_per_gpu=$test_workers" \
     "model.backbone.legacy_sparse_features=$legacy_sparse_features" \

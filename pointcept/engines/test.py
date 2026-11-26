@@ -11,6 +11,7 @@ import os
 import time
 import numpy as np
 from collections import OrderedDict
+from contextlib import nullcontext
 import torch
 import torch.distributed as dist
 import torch.nn.functional as F
@@ -67,15 +68,32 @@ class TesterBase:
         n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
         self.logger.info(f"Num params: {n_parameters}")
         self.fp16_inputs = self.cfg.get("test_fp16", False)
+        w8a8 = self.cfg.get("test_w8a8", False)
+        int8_weights = self.cfg.get("test_int8_weights", False)
         self.logger.info(f"Loading weight at: {self.cfg.weight}")
-        checkpoint = torch.load(self.cfg.weight, map_location="cpu", weights_only=False)
-        if checkpoint.get("format") == "ptv3-w8a8-v1":
+        checkpoint = torch.load(
+            self.cfg.weight, map_location="cpu", weights_only=w8a8 or int8_weights
+        )
+        if w8a8 or checkpoint.get("format") == "ptv3-w8a8-v1":
             from pointcept.models.point_transformer_v3.w8a8 import load_w8a8
 
             self.fp16_inputs = True
-            self.logger.info("Loading W8A8 CUDA forward: spconv INT8 + Triton INT8 dot")
             # Each evaluation rank owns its local GPU and dataset shard.
-            return load_w8a8(model.cuda(), checkpoint)
+            model = load_w8a8(model.cuda(), checkpoint)
+            self.logger.info(
+                "Loaded W8A8 checkpoint %s (%d quantized modules, spconv + Triton)",
+                self.cfg.weight, len(checkpoint["layers"]),
+            )
+            return model
+        if int8_weights:
+            from spconv.core import ConvAlgo
+            from spconv.pytorch import SubMConv3d
+
+            if "values" not in checkpoint or "scales" not in checkpoint:
+                raise ValueError("Expected an INT8 weight archive with values and scales")
+            for layer in model.modules():
+                if isinstance(layer, SubMConv3d):
+                    layer.algo = ConvAlgo.Native
         if self.fp16_inputs:
             model = model.cuda().half()
         else:
@@ -183,6 +201,8 @@ class SemSegTester(TesterBase):
                 json.dump(submission, f, indent=4)
         comm.synchronize()
         record = {}
+        int8_weights = self.cfg.get("test_int8_weights", False)
+        fp16_inputs = getattr(self, "fp16_inputs", False)
         measure_forward = self.cfg.get("measure_forward_performance", False)
         warmup_remaining = 5  # Actual forwards per rank, excluding cache hits.
         timed_points = timed_fragments = allocated_bytes_sum = peak_bytes = 0
@@ -216,7 +236,7 @@ class SemSegTester(TesterBase):
                     for key in input_dict.keys():
                         if isinstance(input_dict[key], torch.Tensor):
                             input_dict[key] = input_dict[key].cuda(non_blocking=True)
-                    if getattr(self, "fp16_inputs", False):
+                    if fp16_inputs:
                         input_dict["feat"] = input_dict["feat"].half()
                     idx_part = input_dict["index"]
                     with torch.no_grad():
@@ -226,7 +246,8 @@ class SemSegTester(TesterBase):
                             end = torch.cuda.Event(enable_timing=True)
                             torch.cuda.reset_peak_memory_stats()
                             begin.record()
-                        pred_part = self.model(input_dict)["seg_logits"]  # (n, k)
+                        with torch.autocast("cuda", dtype=torch.float16) if int8_weights else nullcontext():
+                            pred_part = self.model(input_dict)["seg_logits"]  # (n, k)
                         if timed:
                             end.record()
                             allocated_bytes_sum += torch.cuda.memory_allocated()
@@ -236,7 +257,9 @@ class SemSegTester(TesterBase):
                             forward_events.append((begin, end))
                         elif measure_forward:
                             warmup_remaining -= 1
-                        pred_part = F.softmax(pred_part, -1, dtype=torch.float32 if getattr(self, "fp16_inputs", False) else None)
+                        pred_part = F.softmax(
+                            pred_part, -1, dtype=torch.float32 if fp16_inputs or int8_weights else None
+                        )
                         if self.cfg.empty_cache:
                             torch.cuda.empty_cache()
                         bs = 0

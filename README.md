@@ -20,7 +20,15 @@ export POINTCEPT_PYTHON="$(command -v python)" NUM_GPUS=1
 eval_script=scripts/test_ptv3_s3dis_area5.sh
 sh "$eval_script" --data-root data/s3dis_le_1m --weight path/to/model.pth --gitmerge3d --r 0.8 --stride 5
 sh "$eval_script" --data-root data/s3dis_le_1m --weight path/to/model.pth --fp16
-sh "$eval_script" --data-root data/s3dis_le_1m --weight path/to/model-w8a8.pth
+sh "$eval_script" --data-root data/s3dis_le_1m --int8 --weight path/to/model-w8a8.pth
+```
+
+For INT8, use a CUDA environment with spconv, Triton, and the CUDA toolkit available. `--int8` defaults to `exp/s3dis/ptv3-area5/model/quant/ptv3_w8a8.pth` when `--weight` is omitted. Add `--gitmerge3d --r 0.7 --stride 4` to evaluate INT8 with token merging.
+
+Export room predictions as colored PLY files using the same data root as the evaluation run.
+
+```bash
+python tools/export_s3dis_predictions.py path/to/run/result --data-root data/s3dis_le_1m
 ```
 
 ### S3DIS Area 5 Results

@@ -1,5 +1,9 @@
 """Portable static W8A8 inference for PTv3 on NVIDIA Ampere and newer GPUs."""
 import math
+import sys
+from pathlib import Path
+
+import cumm.common
 
 import torch
 import triton
@@ -134,7 +138,17 @@ class Int8SubMConv(SparseModule):
 
 
 def load_w8a8(model, checkpoint):
+    if checkpoint.get("format") != FORMAT:
+        raise ValueError(f"Expected checkpoint format {FORMAT}")
+    # cumm 0.7 only detects the targets/ layout of conda CUDA toolkits.
+    # Prefer this environment's matching NVRTC headers over /usr/local/cuda.
+    prefix = Path(sys.prefix)
+    if (prefix / "include/cuda.h").is_file() and (prefix / "lib/libcudart.so").is_file():
+        cumm.common._CACHED_CUDA_INCLUDE_LIB = ([prefix / "include"], prefix / "lib")
     layers = target_modules(model)
+    for module in model.modules():
+        if isinstance(module, SubMConv3d):
+            module.algo = ConvAlgo.Native
     specs = checkpoint["layers"]
     if specs.keys() != layers.keys():
         raise ValueError("W8A8 module names do not match the configured model")
