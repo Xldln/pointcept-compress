@@ -62,18 +62,18 @@ In CloudCompare, choose **File → Open** and select a generated `.ply` file. Th
 
 | Method | Type | `r` | Stride | Patch size | mIoU | mAcc | allAcc | Throughput (Mpts/s/GPU) | Mean AGM (MiB) | Peak AGM (GiB) | Weight size (MiB) |
 | :--- | :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| PTv3 | Baseline | — | — | 128 | 80.05% | 84.65% | 93.56% | 1.0222 | 423.9 | 6.83 | 176.41 |
-| PTv3 + RandomDrop | TC | 0.8 | — | 26 | 76.07% | 81.48% | 91.91% | 0.7225 | 384.4 | 3.64 | 176.41 |
-| PTv3 + GitMerge3D | TC | 0.5 | 2 | 64 | 79.79% | 84.35% | 93.50% | 0.7480 | 423.9 | 6.55 | 176.41 |
-| PTv3 + GitMerge3D | TC | 0.7 | 4 | 39 | 79.73% | 84.29% | 93.41% | 0.8088 | 423.9 | 6.42 | 176.41 |
-| PTv3 + GitMerge3D | TC | 0.8 | 5 | 26 | 78.90% | 83.42% | 93.10% | 0.8283 | 423.9 | 6.37 | 176.41 |
-| PTv3 + GitMerge3D | TC | 0.9 | 10 | 13 | 76.87% | 81.52% | 92.22% | 0.8816 | 423.9 | 6.34 | 176.41 |
-| PTv3 FP16 | PTQ | — | — | 128 | 80.05% | 84.65% | 93.56% | 1.4035 | 237.9 | 5.51 | 88.27 |
-| PTv3 INT8 | PTQ | — | — | 128 | 80.06% | 84.67% | 93.57% | 1.2970 | 106.8 | 5.39 | 44.78 |
-| PTv3 INT8 + GitMerge3D | TC + PTQ | 0.7 | 4 | 39 | 79.75% | 84.32% | 93.42% | 0.9864 | 106.8 | 4.82 | 44.78 |
-| PTv3 INT8 + GitMerge3D | TC + PTQ | 0.8 | 5 | 26 | 78.92% | 83.46% | 93.12% | 1.0280 | 106.8 | 4.78 | 44.78 |
+| **PTv3** | **Baseline** | — | — | 128 | **80.05%** | **84.65%** | **93.56%** | **1.0222** | **423.9** | **6.83** | **176.41** |
+| PTv3 + RandomDrop | TC | 0.8 | — | 26 | 76.07%<br><sub>(-3.98 pp)</sub> | 81.48%<br><sub>(-3.17 pp)</sub> | 91.91%<br><sub>(-1.65 pp)</sub> | 0.7225<br><sub>(-29.32%)</sub> | 384.4<br><sub>(-9.32%)</sub> | 3.64<br><sub>(-46.71%)</sub> | 176.41<br><sub>(0.00%)</sub> |
+| PTv3 + GitMerge3D | TC | 0.5 | 2 | 64 | 79.79%<br><sub>(-0.26 pp)</sub> | 84.35%<br><sub>(-0.30 pp)</sub> | 93.50%<br><sub>(-0.06 pp)</sub> | 0.7480<br><sub>(-26.82%)</sub> | 423.9<br><sub>(0.00%)</sub> | 6.55<br><sub>(-4.10%)</sub> | 176.41<br><sub>(0.00%)</sub> |
+| PTv3 + GitMerge3D | TC | 0.7 | 4 | 39 | 79.73%<br><sub>(-0.32 pp)</sub> | 84.29%<br><sub>(-0.36 pp)</sub> | 93.41%<br><sub>(-0.15 pp)</sub> | 0.8088<br><sub>(-20.88%)</sub> | 423.9<br><sub>(0.00%)</sub> | 6.42<br><sub>(-6.00%)</sub> | 176.41<br><sub>(0.00%)</sub> |
+| PTv3 + GitMerge3D | TC | 0.8 | 5 | 26 | 78.90%<br><sub>(-1.15 pp)</sub> | 83.42%<br><sub>(-1.23 pp)</sub> | 93.10%<br><sub>(-0.46 pp)</sub> | 0.8283<br><sub>(-18.97%)</sub> | 423.9<br><sub>(0.00%)</sub> | 6.37<br><sub>(-6.73%)</sub> | 176.41<br><sub>(0.00%)</sub> |
+| PTv3 + GitMerge3D | TC | 0.9 | 10 | 13 | 76.87%<br><sub>(-3.18 pp)</sub> | 81.52%<br><sub>(-3.13 pp)</sub> | 92.22%<br><sub>(-1.34 pp)</sub> | 0.8816<br><sub>(-13.75%)</sub> | 423.9<br><sub>(0.00%)</sub> | 6.34<br><sub>(-7.17%)</sub> | 176.41<br><sub>(0.00%)</sub> |
+| PTv3 FP16 | PTQ | — | — | 128 | 80.05%<br><sub>(0.00 pp)</sub> | 84.65%<br><sub>(0.00 pp)</sub> | 93.56%<br><sub>(0.00 pp)</sub> | 1.4035<br><sub>(+37.30%)</sub> | 237.9<br><sub>(-43.88%)</sub> | 5.51<br><sub>(-19.33%)</sub> | 88.27<br><sub>(-49.96%)</sub> |
+| PTv3 INT8 | PTQ | — | — | 128 | 80.06%<br><sub>(+0.01 pp)</sub> | 84.67%<br><sub>(+0.02 pp)</sub> | 93.57%<br><sub>(+0.01 pp)</sub> | 1.2970<br><sub>(+26.88%)</sub> | 106.8<br><sub>(-74.81%)</sub> | 5.39<br><sub>(-21.08%)</sub> | 44.78<br><sub>(-74.62%)</sub> |
+| PTv3 INT8 + GitMerge3D | TC + PTQ | 0.7 | 4 | 39 | 79.75%<br><sub>(-0.30 pp)</sub> | 84.32%<br><sub>(-0.33 pp)</sub> | 93.42%<br><sub>(-0.14 pp)</sub> | 0.9864<br><sub>(-3.50%)</sub> | 106.8<br><sub>(-74.81%)</sub> | 4.82<br><sub>(-29.43%)</sub> | 44.78<br><sub>(-74.62%)</sub> |
+| PTv3 INT8 + GitMerge3D | TC + PTQ | 0.8 | 5 | 26 | 78.92%<br><sub>(-1.13 pp)</sub> | 83.46%<br><sub>(-1.19 pp)</sub> | 93.12%<br><sub>(-0.44 pp)</sub> | 1.0280<br><sub>(+0.57%)</sub> | 106.8<br><sub>(-74.81%)</sub> | 4.78<br><sub>(-30.01%)</sub> | 44.78<br><sub>(-74.62%)</sub> |
 
-*Table 1. PTv3 semantic segmentation on S3DIS Area 5 with token compression, FP16 inference, and INT8 post-training quantization. A dash indicates that a parameter does not apply.*
+*Table 1. PTv3 semantic segmentation on S3DIS Area 5 with token compression, FP16 inference, and INT8 post-training quantization. Parentheses show the change from the bold PTv3 baseline. Accuracy changes are in percentage points (pp). Throughput, memory, and weight-size changes are relative percentages. A dash indicates that a parameter does not apply.*
 
 The full experimental results will be available in the [PTv3-PTQ repository on Hugging Face](https://huggingface.co/yubinux/PTv3-PTQ/tree/main).
 
