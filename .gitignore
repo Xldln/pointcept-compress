@@ -15,7 +15,7 @@ events.out.tfevents.*
 
 up2hf
 Pointcept-code
-
+upload_*
 # Python and native extension build artifacts
 __pycache__/
 *.py[cod]
