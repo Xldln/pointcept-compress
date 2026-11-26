@@ -44,11 +44,19 @@ sh "$eval_script" --data-root data/s3dis_le_1m --int8
 
 For INT8, use a CUDA environment with spconv, Triton, and the CUDA toolkit available. `--int8` defaults to `exp/s3dis/ptv3-area5/model/quant/ptv3_w8a8.pth` when `--weight` is omitted. Add `--gitmerge3d --r 0.7 --stride 4` to evaluate INT8 with token merging.
 
-Export room predictions as colored PLY files using the same data root as the evaluation run.
+### Visualize S3DIS Predictions
+
+From the repository root, pass the experiment's `result/` directory to the [prediction exporter](tools/export_s3dis_predictions.py). This directory should contain files named `Area_5-<room>_pred.npy`. Use the same preprocessed `--data-root` as the evaluation so the predictions match the original room coordinates.
 
 ```bash
-python tools/export_s3dis_predictions.py path/to/run/result --data-root data/s3dis_le_1m
+python tools/export_s3dis_predictions.py \
+    /home/yy/pointcept-experiments/01-ptv3-baseline/result \
+    --data-root data/s3dis_le_1m
 ```
+
+Replace the example `result/` path with your own. The script writes one `<room>_pred.ply` file per room to `result/cloudcompare_ply/` by default. Use `--output-dir` to choose a different folder.
+
+In CloudCompare, choose **File → Open** and select a generated `.ply` file. The RGB colors show the predicted semantic classes, and the `pred_label` field stores the class ID for each point. [CloudCompare PLY support](https://www.cloudcompare.org/doc/wiki/index.php/FILE_I/O)
 
 ### S3DIS Area 5 Results
 
