@@ -994,7 +994,7 @@ class GridSample(object):
             sampled_indices (np.ndarray)
 
         Returns:
-            np.ndarray: [C1, C1+C2, ...]。
+            np.ndarray: [C1, C1+C2, ...].
         """
         if len(origin_offsets) == 0:
             return np.array([], dtype=origin_offsets.dtype)

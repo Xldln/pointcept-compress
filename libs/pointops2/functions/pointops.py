@@ -985,7 +985,7 @@ def queryandgroup(
     n, m, c = xyz.shape[0], new_xyz.shape[0], feat.shape[1]
     grouped_xyz = xyz[idx.view(-1).long(), :].view(m, nsample, 3)  # (m, nsample, 3)
     # grouped_xyz = grouping(xyz, idx) # (m, nsample, 3)
-    # 相对位置
+    # Positions relative to the query point.
     grouped_xyz -= new_xyz.unsqueeze(1)  # (m, nsample, 3)
     grouped_feat = feat[idx.view(-1).long(), :].view(m, nsample, c)  # (m, nsample, c)
     # grouped_feat = grouping(feat, idx) # (m, nsample, c)

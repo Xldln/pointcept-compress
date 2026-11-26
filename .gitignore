@@ -13,7 +13,7 @@ wandb/
 events.out.tfevents.*
 *.log
 
-
+up2hf
 
 
 # Python and native extension build artifacts
